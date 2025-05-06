@@ -1,0 +1,47 @@
+https://drive.google.com/drive/folders/1HEVIUF5HLOwbpqZHcwmRG2rZzuRyyH6M
+
+# 1. Import required libraries and load dataset
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import zscore
+
+# Load dataset
+df = pd.read_csv(r"C:\Users\RIBBONS\Downloads\3_employees.csv")
+
+# 2. Data Preprocessing
+print("Missing values (column-wise):\n", df.isnull().sum())
+print("\nStatistical summary:\n", df.describe(include='all'))
+
+# 3. Variable Descriptions
+print("\nColumn names:\n", df.columns)
+print("DataFrame shape (rows, columns):", df.shape)
+
+# 4. Data Formatting and Type Checking
+print("\nData types of variables:\n", df.dtypes)
+
+# Convert object types to category or correct types
+for col in df.select_dtypes(include='object').columns:
+    df[col] = df[col].astype('category')
+
+# Example: If a numeric column was stored as object
+# df['Salary'] = pd.to_numeric(df['Salary'], errors='coerce')
+
+print("\nUpdated data types after conversion:\n", df.dtypes)
+
+# 5. Data Normalization (Z-Score) and Box Plot
+# Pick a numeric column, e.g., 'Salary'
+if 'Salary' in df.columns:
+    df['Salary_zscore'] = zscore(df['Salary'].dropna())
+    plt.figure(figsize=(6, 4))
+    sns.boxplot(df['Salary'])
+    plt.title("Boxplot of Salary")
+    plt.show()
+else:
+    print("Column 'Salary' not found for normalization.")
+
+# 6. Convert Categorical to Quantitative
+# Using one-hot encoding or label encoding
+df_encoded = pd.get_dummies(df, drop_first=True)
+print("\nData after encoding categorical variables:\n", df_encoded.head())
