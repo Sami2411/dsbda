@@ -1,0 +1,60 @@
+# Import required libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+
+# Load the dataset from the specified path
+df = pd.read_csv(r"C:\Users\RIBBONS\Downloads\AcademicPerformance_New.csv")
+
+# Display the entire DataFrame (only advisable for small datasets)
+df
+
+# Check for missing values in each column
+df.isnull().sum()
+
+# Fill missing values in 'AI' column with its mean value
+df['AI'].fillna(df['AI'].mean(), inplace=True)
+
+# Fill missing values in 'WT' column with its mode (most frequent value)
+df['WT'].fillna(df['WT'].mode()[0], inplace=True)
+
+# Fill any remaining missing values in the dataset with 0
+df.fillna(0, inplace=True)
+
+# Identify all numeric columns in the dataset
+numeric_cols = df.select_dtypes(include='number').columns
+
+# Define a function to detect outliers using the IQR method
+def detect_outliers_iqr(data):
+    Q1 = data.quantile(0.25)  # First quartile
+    Q3 = data.quantile(0.75)  # Third quartile
+    IQR = Q3 - Q1             # Interquartile range
+    # Identify data points that are below Q1 - 1.5*IQR or above Q3 + 1.5*IQR
+    outlier_condition = (data < (Q1 - 1.5 * IQR)) | (data > (Q3 + 1.5 * IQR))
+    return outlier_condition, Q1, Q3
+
+# Loop through each numeric column to detect and remove outliers
+for col in numeric_cols:
+    outliers, Q1, Q3 = detect_outliers_iqr(df[col])
+    print(f"\nColumn: {col}")
+    print(f"Q1: {Q1}, Q3: {Q3}")
+    print("Outliers found at:\n", df[col][outliers])
+    # Remove rows with outliers in the current column
+    df = df[~outliers]
+
+# Apply aggregation functions (mean and max) and display results
+for col in numeric_cols:
+    avg = df[col].mean()
+    max_val = df[col].max()
+    print(f"{col} --> Average is: {avg}")
+    print(f"{col} --> Maximum value is: {max_val}")
+
+# Draw a scatter plot between DSBDA and WT columns to visualize the relationship
+plt.scatter(df['DSBDA'], df['WT'], color='blue')
+plt.xlabel("DSBDA")
+plt.ylabel("WT")
+plt.title("DSBDA vs WT Performance")
+plt.grid(True)
+plt.show()

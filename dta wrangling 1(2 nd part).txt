@@ -1,0 +1,56 @@
+# Step 1: Import required libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+df = pd.read_csv(r"C:\Users\RIBBONS\Downloads\student.csv")  # Ensure this file exists in the working directory
+print("Dataset loaded successfully.")
+
+
+df
+
+# Step 2: Data Preprocessing
+# Find missing values
+print("\nMissing Values in Dataset:")
+print(df.isnull().sum())
+
+# Display basic statistical information
+print("\nStatistical Information:")
+print(df.describe(include='all'))
+
+
+
+# Step 3: Variable descriptions and data frame dimensions
+print("\nVariable Types:")
+print(df.dtypes)
+
+print("\nShape of the Dataset:")
+print(df.shape)
+
+
+# Step 4: Data Normalization using Min-Max
+# Choose a numeric column, e.g., 'Math_score'
+if 'Math_score' in df.columns:
+    df['Math_score_Normalized'] = (df['Math_score'] - df['Math_score'].min()) / (df['Math_score'].max() - df['Math_score'].min())
+
+    # Boxplot
+    plt.figure(figsize=(6, 4))
+    sns.boxplot(x=df['Math_score_Normalized'])
+    plt.title("Boxplot of Normalized Math_score")
+    plt.show()
+else:
+    print("Column 'Math_score' not found for normalization.")
+
+
+# Step 5: Turn Categorical Variables for PG column into Quantitative
+# Assume 'PG' has values like 'Yes', 'No'
+if 'PG' in df.columns:
+    df['PG_Quant'] = df['PG'].map({'Yes': 1, 'No': 0})
+    print("\nPG column converted to numerical:")
+    print(df[['PG', 'PG_Quant']].head())
+else:
+    print("Column 'PG' not found.")
+
+

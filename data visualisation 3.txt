@@ -1,0 +1,39 @@
+import pandas as pd
+from sklearn.datasets import load_iris
+
+# Load dataset
+iris = load_iris()
+df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+df['species'] = iris.target
+
+# Map species to actual names
+df['species'] = df['species'].map(dict(zip(range(3), iris.target_names)))
+
+# Feature types
+feature_types = df.dtypes
+print("Feature Types:\n", feature_types)
+
+import matplotlib.pyplot as plt
+df.hist(figsize=(10, 8), edgecolor='black')
+plt.suptitle('Histograms of Iris Dataset Features')
+plt.tight_layout()
+plt.show()
+
+import seaborn as sns
+plt.figure(figsize=(12, 8))
+for idx, column in enumerate(df.columns[:-1]):
+    plt.subplot(2, 2, idx+1)
+    sns.boxplot(y=column, data=df)
+    plt.title(f'Box Plot of {column}')
+plt.tight_layout()
+plt.show()
+
+# Step 4: Outlier and Distribution Observations
+
+print("\n Observations and Inferences:")
+print("- Sepal Length: Fairly symmetric, no strong outliers.")
+print("- Sepal Width: Slightly skewed with a few low outliers.")
+print("- Petal Length: Skewed with large range; shows natural clustering.")
+print("- Petal Width: Some near-zero outliers, likely from Setosa species.")
+print("- Species: A nominal categorical variable with three classes (setosa, versicolor, virginica).")
+

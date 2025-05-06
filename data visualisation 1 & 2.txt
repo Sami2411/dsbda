@@ -1,0 +1,65 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+
+# Load the Titanic dataset
+titanic = sns.load_dataset('titanic')
+titanic
+
+
+titanic.isnull().sum()
+titanic['age']=titanic['age'].fillna(titanic['age'].mean())
+titanic
+
+titanic['age']=titanic['age'].astype(int)
+titanic
+
+plt.figure(figsize=(10, 6))
+sns.histplot(titanic['fare'], bins=30, kde=True, color='skyblue')
+plt.title('Distribution of Ticket Fare')
+plt.xlabel('Fare')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+plt.show()
+plt.figure(figsize=(10,6))
+sns.countplot(data=titanic,x='sex',hue='survived')
+plt.title("Survived by Gender")
+plt.xlabel("Gender")
+plt.ylabel("Count")
+plt.show()
+male_count=titanic[titanic['sex']=='female']
+plt.figure(figsize=(10,6))
+sns.countplot(data=male_count,x='pclass',hue='survived')
+plt.xlabel('Passenger Class')
+plt.ylabel('Number of male')
+plt.show()
+sns.pairplot(titanic[['survived','age','fare','pclass']],hue='survived')
+
+plt.show()
+
+
+observations = """
+1. Fare Distribution:
+   - Most passengers paid low fares.
+   - Few paid very high fares (right-skewed).
+
+2. Survival by Gender:
+   - More females survived than males.
+   - Women had higher survival chances.
+
+3. Male Survival by Class:
+   - 1st class males had higher survival.
+   - 3rd class males had low survival.
+
+4. Pairplot Insights:
+   - Survivors paid higher fares.
+   - Younger, 1st-class, and female passengers survived more.
+
+5. Age vs Survival (Boxplot):
+   - Survivors slightly younger on average.
+   - Children had better survival rates.
+"""
+
+print(observations)

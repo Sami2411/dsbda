@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+
+# Load dataset
+df = pd.read_csv(r"C:\Users\RIBBONS\Downloads\AcademicPerformance_New.csv")
+df
+
+# Handle missing values
+df['AI'].fillna(df['AI'].mean(), inplace=True)
+df['WT'].fillna(df['WT'].mode()[0], inplace=True)
+
+df.fillna(df.mean(numeric_only=True), inplace=True)
+for col in df.select_dtypes(include='object').columns:
+    df[col].fillna(df[col].mode()[0], inplace=True)
+df
+
+
+# Detect outliers
+numeric_cols = df.select_dtypes(include=[np.number]).columns
+z_scores = np.abs(stats.zscore(df[numeric_cols]))
+df['is_outlier'] = (z_scores > 3).any(axis=1)
+
+
+# Remove outliers
+df_cleaned = df[~df['is_outlier']].copy()
+
+print(df_cleaned.head())        # First 5 rows
+print(df_cleaned.shape)         # Shape after removing outliers
+
+# Apply binning to cleaned DSBDA scores
+bins = [0, 25, 75, 100]
+labels = ['Low', 'Medium', 'High']
+df_cleaned['DSBDA_Category'] = pd.cut(df_cleaned['DSBDA'], bins=bins, labels=labels)
+print(df_cleaned[['DSBDA', 'DSBDA_Category']].head(10))
+
+# Draw box plot for DSBDA before cleaning
+plt.figure(figsize=(8, 4))
+plt.title("DSBDA Score - Before Outlier Removal")
+sns.boxplot(x='DSBDA', data=df)
+plt.show()
+
+# Draw box plot for DSBDA after outlier removal
+plt.figure(figsize=(8, 4))
+plt.title("DSBDA Score - After Outlier Removal")
+sns.boxplot(x='DSBDA', data=df_cleaned)
+plt.show()
